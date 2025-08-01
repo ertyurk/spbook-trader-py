@@ -13,6 +13,7 @@ from .services.trader import TradingService, ExpectedValueStrategy, KellyStrateg
 from .services.improved_trader import ImprovedTradingService, ValueBettingStrategy, AdaptiveKellyStrategy
 from .services.predictor import PredictorService
 from .services.improved_predictor import ImprovedPredictorService
+from .services.data_sources import SportsDataAPI, HistoricalDataManager, BacktestingEngine
 
 
 # Global services
@@ -360,6 +361,92 @@ async def simulate_match(
     except Exception as e:
         logger.error(f"Error simulating match: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/data/live-odds")
+async def get_live_odds():
+    """Get live odds from real market data APIs."""
+    try:
+        data_api = SportsDataAPI()  # Without API key, returns mock data
+        odds_data = await data_api.fetch_live_odds()
+        
+        return {
+            "data_source": "Mock Data (Add API key for real data)",
+            "matches_found": len(odds_data),
+            "matches": odds_data,
+            "note": "To use real data, set API key from https://the-odds-api.com/"
+        }
+    except Exception as e:
+        logger.error(f"Error fetching live odds: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/data/backtest")
+async def run_backtest():
+    """Run backtest on historical data to show real performance."""
+    try:
+        # Initialize data services
+        data_api = SportsDataAPI()
+        hist_manager = HistoricalDataManager(data_api)
+        await hist_manager.load_historical_data()
+        
+        # Run backtest with improved trading service
+        if not trading_service:
+            raise HTTPException(status_code=500, detail="Trading service not initialized")
+        
+        backtest_engine = BacktestingEngine(hist_manager)
+        results = await backtest_engine.run_backtest(trading_service)
+        
+        return {
+            "backtest_results": results,
+            "data_source": "Simulated historical data",
+            "note": "Real backtesting requires historical odds data",
+            "recommendation": "This shows the framework - add real data APIs for production"
+        }
+    except Exception as e:
+        logger.error(f"Error running backtest: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/data/sources")
+async def get_data_sources():
+    """Information about data sources and how to integrate real data."""
+    return {
+        "current_status": "SIMULATED DATA ONLY",
+        "real_data_integration": {
+            "live_odds": {
+                "recommended_api": "The Odds API",
+                "url": "https://the-odds-api.com/",
+                "cost": "$50-200/month for live odds",
+                "coverage": "Premier League, Champions League, etc."
+            },
+            "historical_data": {
+                "recommended_api": "Football Data API", 
+                "url": "https://www.football-data.org/",
+                "cost": "Free tier available",
+                "coverage": "5+ seasons of match results"
+            },
+            "live_scores": {
+                "recommended_api": "RapidAPI Football",
+                "url": "https://rapidapi.com/api-sports/api/api-football/",
+                "cost": "$10-100/month",
+                "coverage": "Live match events, lineups, stats"
+            }
+        },
+        "integration_steps": [
+            "1. Sign up for API keys from data providers",
+            "2. Update app/services/data_sources.py with real API calls",
+            "3. Create historical database with real match results",
+            "4. Calibrate prediction models on historical data",
+            "5. Run live system with real market odds"
+        ],
+        "current_simulation": {
+            "team_ratings": "Based on realistic Premier League strengths",
+            "statistical_models": "Proper Poisson distribution with real parameters",
+            "market_structure": "Realistic odds ranges and bookmaker margins",
+            "match_events": "Synthetic but statistically accurate"
+        }
+    }
 
 
 if __name__ == "__main__":
