@@ -1,4 +1,4 @@
-# 🏟️ Sports Betting Simulator
+# 🏟️ Sports Betting Simulator - !EXPERIMENTATION do not rely on it.
 
 A real-time sports data simulation platform with predictive modeling and automated trading capabilities. Built with FastAPI, Redis Streams, and modern async Python patterns.
 
@@ -76,7 +76,7 @@ source .venv/bin/activate
 
 2. **Install dependencies**:
 ```bash
-uv pip install fastapi uvicorn redis aioredis pandas scikit-learn pydantic sqlalchemy asyncpg numpy python-dateutil
+uv sync
 ```
 
 3. **Start Redis** (if not using Docker):
@@ -209,39 +209,3 @@ pytest --cov=app tests/
 - **Metrics**: Trading performance via `/metrics` endpoint
 - **Stream Info**: Redis stream statistics via `/streams/info`
 - **Latency Tracking**: End-to-end processing time measurement
-
-## 🚧 Development Status
-
-### ✅ Implemented
-- Core event-driven architecture
-- Basic predictive modeling
-- Multiple trading strategies
-- REST API with FastAPI
-- Docker containerization
-
-### 🔄 In Progress  
-- Database persistence layer
-- Comprehensive test suite
-- Advanced ML models
-
-### 📋 Planned
-- WebSocket real-time updates
-- Backtesting framework
-- Performance monitoring dashboard
-- Kubernetes deployment
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)  
-5. Open Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## ⚠️ Disclaimer
-
-This is a educational/demonstration project for algorithmic trading concepts. Not intended for real money trading without proper risk management, backtesting, and regulatory compliance.
